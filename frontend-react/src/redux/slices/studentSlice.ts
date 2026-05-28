@@ -1,5 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type StudentProfile, type AttendanceRecord, type FeeStructure } from '../../services/api/student.api';
+// Clean, strict compile-time type extraction annotations
+import type { StudentProfile, AttendanceRecord, FeeStructure } from '../../services/api/student.api';
 
 interface StudentState {
   profile: StudentProfile | null;
@@ -41,9 +42,7 @@ const studentSlice = createSlice({
       state.isLoading = false;
       state.error = action.payload;
     },
-    clearStudentState: (state) => {
-      return initialState;
-    },
+    clearStudentState: () => initialState,
   },
 });
 

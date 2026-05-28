@@ -1,0 +1,16 @@
+# https://www.robotstxt.org/robotstxt.html
+
+# Group 1: Apply to all web crawlers
+User-agent: *
+
+# Block crawlers from indexing private portal dashboards
+Disallow: /admin/
+Disallow: /teacher/
+Disallow: /student/
+Disallow: /unauthorized
+
+# Allow everything else (Login, public pages)
+Allow: /
+
+# Specify the sitemap location if you generate one later
+# Sitemap: https://yourdomain.com/sitemap.xml

@@ -1,45 +1,44 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { DashboardLayout } from './DashboardLayout';
-// Removed ShieldAlert to fix the unused variable compiler error
-import { BookOpen, Calendar, CreditCard, BrainCircuit } from 'lucide-react';
+import { Outlet, Link, useLocation } from 'react-router-dom';
+import { ROUTES } from '../config/constants';
+import { HomeIcon, SparklesIcon, WalletIcon, BookOpenIcon } from '../assets/icons/icons';
 
 export const StudentLayout: React.FC = () => {
   const location = useLocation();
 
-  const navigationItems = [
-    { name: 'Student Dashboard', path: '/student/dashboard', icon: BookOpen },
-    { name: 'My Attendance Logs', path: '/student/attendance', icon: Calendar },
-    { name: 'Fee Ledger Tracker', path: '/student/fees', icon: CreditCard },
-    { name: 'AI Performance Desk', path: '/student/ai-desk', icon: BrainCircuit },
+  const links = [
+    { name: 'Student Hub', path: ROUTES.STUDENT.DASHBOARD, icon: HomeIcon },
+    { name: 'AI Assistance Desk', path: ROUTES.STUDENT.AI_DESK, icon: SparklesIcon },
+    { name: 'Performance Logs', path: ROUTES.STUDENT.ANALYTICS, icon: BookOpenIcon },
+    { name: 'Fee Ledgers', path: ROUTES.STUDENT.FEES, icon: WalletIcon },
   ];
 
-  // Custom internal contextual sub-navigation implementation for child templates
-  const renderStudentSidebarExtension = (
-    <div className="space-y-1 px-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-      <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-        Student Modules
-      </div>
-      {navigationItems.map((item) => {
-        const Icon = item.icon;
-        const isActive = location.pathname === item.path;
-        return (
-          <Link
-            key={item.path}
-            to={item.path}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-              isActive
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-            }`}
-          >
-            <Icon className="w-4 h-4 shrink-0" />
-            <span>{item.name}</span>
-          </Link>
-        );
-      })}
+  return (
+    <div className="flex w-full h-full overflow-hidden">
+      <aside className="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col p-4 pt-20">
+        <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest px-4 mb-4">Workspace</h2>
+        <nav className="space-y-1 flex-1">
+          {links.map((link) => {
+            const Icon = link.icon;
+            const isActive = location.pathname === link.path;
+            return (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`flex items-center space-x-3 px-4 py-2.5 rounded-xl transition ${
+                  isActive ? 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 font-medium' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800/60'
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+                <span>{link.name}</span>
+              </Link>
+            );
+          })}
+        </nav>
+      </aside>
+      <main className="flex-1 overflow-y-auto p-8 pt-24 bg-gray-50 dark:bg-gray-950/40">
+        <Outlet />
+      </main>
     </div>
   );
-
-  return <DashboardLayout sidebarExtension={renderStudentSidebarExtension} />;
 };

@@ -1,28 +1,41 @@
-import { useEffect } from 'react';
-import { useSocketContext } from '../app/providers/SocketProvider';
+import { useEffect, useState } from 'react';
 import { SocketService } from '../services/socket/socket';
 
 export const useSocket = (eventName?: string, callback?: (data: any) => void) => {
-  const { socket, isConnected } = useSocketContext();
+  const [isConnected, setIsConnected] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!socket || !eventName || !callback) return;
+    const socket = SocketService.connect();
+    setIsConnected(socket.connected);
 
-    // Direct event listener binding using the core storage utility layer
-    const unsubscribe = SocketService.listenToEvent(socket, eventName, callback);
+    const handleConnect = () => setIsConnected(true);
+    const handleDisconnect = () => setIsConnected(false);
+
+    socket.on('connect', handleConnect);
+    socket.on('disconnect', handleDisconnect);
+
+    // If tracking a live event streaming pipe, bind listener
+    if (eventName && callback) {
+      const unsubscribe = SocketService.listenToEvent(eventName, callback);
+      return () => {
+        unsubscribe();
+        socket.off('connect', handleConnect);
+        socket.off('disconnect', handleDisconnect);
+      };
+    }
 
     return () => {
-      unsubscribe();
+      socket.off('connect', handleConnect);
+      socket.off('disconnect', handleDisconnect);
     };
-  }, [socket, eventName, callback]);
+  }, [eventName, callback]);
 
   const emit = (event: string, payload: any) => {
-    SocketService.emitEvent(socket, event, payload);
+    SocketService.emitEvent(event, payload);
   };
 
   return {
     emit,
     isConnected,
-    socketId: socket?.id || null,
   };
 };

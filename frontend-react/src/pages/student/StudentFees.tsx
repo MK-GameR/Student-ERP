@@ -13,7 +13,9 @@ export const StudentFees: React.FC = () => {
       try {
         const data = await StudentAPI.getFees();
         dispatch(setFeesSuccess(data));
-      } catch (err) { console.error(err); }
+      } catch (err) { 
+        console.error(err); 
+      }
     };
     loadFees();
   }, [dispatch]);
@@ -25,7 +27,10 @@ export const StudentFees: React.FC = () => {
         <div className="bg-gradient-to-br from-gray-900 to-gray-800 dark:from-blue-900 dark:to-indigo-900 rounded-2xl p-8 text-white shadow-xl relative overflow-hidden">
           <CreditCard className="absolute -right-4 -bottom-4 w-32 h-32 text-white/5 rotate-12" />
           <p className="text-sm font-medium text-blue-200 uppercase tracking-widest">Total Outstanding Balance</p>
-          <h2 className="text-4xl font-extrabold mt-2">${fees?.totalAmount.toLocaleString()}</h2>
+          {/* FIX: Safe default fallback value before evaluating locale strings */}
+          <h2 className="text-4xl font-extrabold mt-2">
+            ${(fees?.totalAmount ?? 0).toLocaleString()}
+          </h2>
           <div className="mt-8 flex gap-4">
             <button className="bg-blue-600 hover:bg-blue-500 px-6 py-2.5 rounded-lg text-sm font-bold transition-all shadow-lg shadow-blue-600/30">
               Pay Online Now
@@ -60,7 +65,8 @@ export const StudentFees: React.FC = () => {
       <div className="space-y-4">
         <h3 className="text-xl font-bold px-1">Transaction History</h3>
         <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
-          {fees?.transactions.map((t, idx) => (
+          {/* FIX: Changed to optional chaining on map array execution block */}
+          {fees?.transactions?.map((t, idx) => (
             <div key={t.id} className="p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/40 border-b border-gray-100 dark:border-gray-700 last:border-0 transition-colors">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400">
@@ -79,6 +85,11 @@ export const StudentFees: React.FC = () => {
               </div>
             </div>
           ))}
+          
+          {/* Optional: Visual state if transactions array is empty */}
+          {(!fees?.transactions || fees.transactions.length === 0) && (
+            <p className="text-center py-6 text-sm text-gray-400">No transactions recorded yet.</p>
+          )}
         </div>
       </div>
     </div>

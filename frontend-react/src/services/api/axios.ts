@@ -1,10 +1,11 @@
-import axios, { type AxiosInstance, type AxiosError, type InternalAxiosRequestConfig } from 'axios';
+import axios, { type AxiosInstance, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 import { ENV } from '../../config/env';
 import { TokenStorage } from '../storage/token.storage';
 import { ROUTES } from '../../config/routes';
 
 const apiClient: AxiosInstance = axios.create({
-  baseURL: ENV.API_BASE_URL,
+  // FIX: Updated to match your environment object's property name (API_URL)
+  baseURL: ENV.API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -27,6 +28,7 @@ apiClient.interceptors.request.use(
 
 // Response Interceptor: Global interception of backend errors (like expired tokens)
 apiClient.interceptors.response.use(
+  // FIX: AxiosResponse is now correctly imported and resolved above
   (response: AxiosResponse) => response,
   async (error) => {
     const originalRequest = error.config;
@@ -36,7 +38,7 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
       try {
         // Implement token refresh mechanism here if supported by your API backend node
-        // const newTokens = await axios.post(`${ENV.API_BASE_URL}/auth/refresh`, { ... });
+        // const newTokens = await axios.post(`${ENV.API_URL}/auth/refresh`, { ... });
         // TokenStorage.setToken(newTokens.data.accessToken);
         // return apiClient(originalRequest);
         

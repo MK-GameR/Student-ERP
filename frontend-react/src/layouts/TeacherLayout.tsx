@@ -1,44 +1,42 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom'; // Fixed the typo in the import path
-import { DashboardLayout } from './DashboardLayout';
-import { GraduationCap, ClipboardCheck, Users } from 'lucide-react'; // Removed unused MessageSquare icon
+import { Outlet, Link, useLocation } from 'react-router-dom';
+import { ROUTES } from '../config/constants';
+import { AcademicCapIcon, DashboardIcon } from '../assets/icons/icons';
 
 export const TeacherLayout: React.FC = () => {
   const location = useLocation();
 
-  const menuItems = [
-    { label: 'Teacher Command Center', route: '/teacher/dashboard', icon: GraduationCap },
-    { label: 'Mark Class Attendance', route: '/teacher/attendance-control', icon: ClipboardCheck },
-    { label: 'Student Roster Group', route: '/teacher/roster', icon: Users },
+  const links = [
+    { name: 'Faculty Dashboard', path: ROUTES.TEACHER.DASHBOARD, icon: DashboardIcon },
+    { name: 'Attendance Registers', path: ROUTES.TEACHER.ATTENDANCE_CONTROL, icon: AcademicCapIcon },
   ];
 
-  // Map out the teacher specific menu items dynamically
-  const renderTeacherSidebarExtension = (
-    <div className="space-y-1 px-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-      <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-        Teacher Modules
-      </div>
-      {menuItems.map((item) => {
-        const Icon = item.icon;
-        const isActive = location.pathname === item.route;
-        return (
-          <Link
-            key={item.route}
-            to={item.route}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-              isActive
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-            }`}
-          >
-            <Icon className="w-4 h-4 shrink-0" />
-            <span>{item.label}</span>
-          </Link>
-        );
-      })}
+  return (
+    <div className="flex w-full h-full overflow-hidden">
+      <aside className="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col p-4 pt-20">
+        <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest px-4 mb-4">Academic Suites</h2>
+        <nav className="space-y-1 flex-1">
+          {links.map((link) => {
+            const Icon = link.icon;
+            const isActive = location.pathname === link.path;
+            return (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`flex items-center space-x-3 px-4 py-2.5 rounded-xl transition ${
+                  isActive ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 font-medium' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800/60'
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+                <span>{link.name}</span>
+              </Link>
+            );
+          })}
+        </nav>
+      </aside>
+      <main className="flex-1 overflow-y-auto p-8 pt-24 bg-gray-50 dark:bg-gray-950/40">
+        <Outlet />
+      </main>
     </div>
   );
-
-  // Pass the generated menu straight down to the dashboard shell
-  return <DashboardLayout sidebarExtension={renderTeacherSidebarExtension} />;
 };
